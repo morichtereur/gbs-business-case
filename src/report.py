@@ -4,7 +4,7 @@ baked in; every figure is pulled live so the document reproduces itself the
 same way baseline.json does.
 
 Writes `output/business_case.md`, embedding the three charts sensitivity.py
-also writes to `output/`.
+also writes to the tracked `assets/` directory.
 
 Run: .venv/bin/python src/report.py
 """
@@ -31,16 +31,16 @@ def eur(x: float) -> str:
     return f"EUR {x:,.0f}"
 
 
-def build_report(baseline: dict, assumptions: dict, out_dir: Path) -> str:
+def build_report(baseline: dict, assumptions: dict, assets_dir: Path) -> str:
     base_params = central_params(assumptions)
     result = run_model(baseline, base_params)
     base_npv, tornado_rows = run_tornado(baseline, assumptions, base_params)
     npvs, samples = run_monte_carlo(baseline, assumptions, base_params)
     priority = diligence_priority(npvs, samples, assumptions)
 
-    plot_tornado(base_npv, tornado_rows, out_dir / "tornado.png")
-    plot_npv_distribution(npvs, out_dir / "npv_distribution.png")
-    plot_diligence_priority(priority, out_dir / "diligence_priority.png")
+    plot_tornado(base_npv, tornado_rows, assets_dir / "tornado.png")
+    plot_npv_distribution(npvs, assets_dir / "npv_distribution.png")
+    plot_diligence_priority(priority, assets_dir / "diligence_priority.png")
 
     p10, p50, p90 = (float(v) for v in np.percentile(npvs, [10, 50, 90]))
     p_positive = float((npvs > 0).mean())
@@ -162,7 +162,7 @@ discounted at {base_params['finance.discount_rate']:.0%}:
 
 ## Sensitivity: what moves the answer
 
-![NPV sensitivity by assumption, low vs high](tornado.png)
+![NPV sensitivity by assumption, low vs high](../assets/tornado.png)
 
 | Assumption | Diligence bucket | NPV range | Swing |
 |---|---|---|---|
@@ -180,7 +180,7 @@ model is the demonstration, not the assertion.
 
 ## Monte Carlo: a distribution, not a point
 
-![Monte Carlo NPV distribution](npv_distribution.png)
+![Monte Carlo NPV distribution](../assets/npv_distribution.png)
 
 10,000 draws across every ranged assumption (triangular on low/central/high):
 
@@ -198,7 +198,7 @@ below, mostly resolvable before committing capital.
 
 ## Diligence priority
 
-![Diligence priority by assumption](diligence_priority.png)
+![Diligence priority by assumption](../assets/diligence_priority.png)
 
 Share of NPV variance explained by each assumption, split by whether
 diligence *could* close it (a time study, a rate card) or whether it
@@ -238,13 +238,17 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--baseline", type=Path, default=Path("baseline.json"))
     ap.add_argument("--assumptions", type=Path, default=Path("assumptions.yaml"))
-    ap.add_argument("--out-dir", type=Path, default=Path("output"))
+    ap.add_argument("--out-dir", type=Path, default=Path("output"),
+                     help="Where business_case.md is written — gitignored, regenerable.")
+    ap.add_argument("--assets-dir", type=Path, default=Path("assets"),
+                     help="Charts — tracked, so they render on GitHub without a local run.")
     args = ap.parse_args()
     args.out_dir.mkdir(exist_ok=True)
+    args.assets_dir.mkdir(exist_ok=True)
 
     baseline = load_baseline(args.baseline)
     assumptions = load_assumptions(args.assumptions)
-    report = build_report(baseline, assumptions, args.out_dir)
+    report = build_report(baseline, assumptions, args.assets_dir)
 
     out_path = args.out_dir / "business_case.md"
     out_path.write_text(report)

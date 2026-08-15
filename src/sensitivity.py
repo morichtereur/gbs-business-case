@@ -241,10 +241,14 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--baseline", type=Path, default=Path("baseline.json"))
     ap.add_argument("--assumptions", type=Path, default=Path("assumptions.yaml"))
-    ap.add_argument("--out-dir", type=Path, default=Path("output"))
+    ap.add_argument("--out-dir", type=Path, default=Path("output"),
+                     help="Regenerable data (sensitivity.json) — gitignored.")
+    ap.add_argument("--assets-dir", type=Path, default=Path("assets"),
+                     help="Charts — tracked, so they render on GitHub without a local run.")
     ap.add_argument("--n", type=int, default=N_MONTE_CARLO)
     args = ap.parse_args()
     args.out_dir.mkdir(exist_ok=True)
+    args.assets_dir.mkdir(exist_ok=True)
 
     baseline = load_baseline(args.baseline)
     assumptions = load_assumptions(args.assumptions)
@@ -272,11 +276,12 @@ def main() -> None:
     }
     (args.out_dir / "sensitivity.json").write_text(json.dumps(result, indent=2) + "\n")
 
-    plot_tornado(base_npv, tornado_rows, args.out_dir / "tornado.png")
-    plot_npv_distribution(npvs, args.out_dir / "npv_distribution.png")
-    plot_diligence_priority(priority, args.out_dir / "diligence_priority.png")
+    plot_tornado(base_npv, tornado_rows, args.assets_dir / "tornado.png")
+    plot_npv_distribution(npvs, args.assets_dir / "npv_distribution.png")
+    plot_diligence_priority(priority, args.assets_dir / "diligence_priority.png")
 
-    print(f"wrote {args.out_dir/'sensitivity.json'}, tornado.png, npv_distribution.png, diligence_priority.png\n")
+    print(f"wrote {args.out_dir/'sensitivity.json'}; "
+          f"{args.assets_dir}/tornado.png, npv_distribution.png, diligence_priority.png\n")
     print(f"Central NPV: EUR {base_npv:,.0f}")
     print("\nTornado (ranked by swing):")
     for r in tornado_rows:

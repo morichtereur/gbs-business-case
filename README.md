@@ -131,17 +131,29 @@ not automatically make a number the biggest driver of NPV variance once
 discounting is applied, and the model said so instead of confirming the
 prior.
 
+![NPV sensitivity by assumption, low vs high](assets/tornado.png)
+
 The headline itself is not the one a workshop estimate would have produced:
 at central assumptions the case does **not** clear the 9% hurdle rate
 (NPV **–€142,931**), and Monte Carlo puts the odds of a positive NPV at
 **26%**. That is a direct consequence of the measured touches-per-case figure
 — reworked cases average 1.48 touches, not the multi-touch slog usually
-assumed, so eliminating rework saves less labour than intuition suggests. The
-useful output is not that number alone but where it points: diligence should
-spend its first week on a rework-handling time study and the client's actual
-rate card, not on chasing an implementation cost quote.
+assumed, so eliminating rework saves less labour than intuition suggests.
 
-Full write-up, cash-flow table, and all three charts:
+![Monte Carlo NPV distribution](assets/npv_distribution.png)
+
+The useful output is not that number alone but where it points: diligence
+should spend its first week on a rework-handling time study and the client's
+actual rate card, not on chasing an implementation cost quote.
+
+![Diligence priority by assumption](assets/diligence_priority.png)
+
+Full write-up and cash-flow table:
 [`output/business_case.md`](output/business_case.md) — regenerate with
 `.venv/bin/python src/report.py` after any change to `baseline.json` or
-`assumptions.yaml`.
+`assumptions.yaml` (the charts above are written to `assets/`, tracked in
+git so they render here without a local run).
+
+---
+
+Built by [Moritz Richter](https://www.linkedin.com/in/moritz-richter-28297119a/) · Finance & Strategy Consultant · Zürich
