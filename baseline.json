@@ -1,13 +1,14 @@
 {
   "provenance": {
-    "generated_at": "2026-08-15T15:37:04+00:00",
+    "generated_at": "2026-08-15T15:53:54+00:00",
     "source_dataset": "BPI Challenge 2019 \u2014 SAP purchase-to-pay event log",
     "source_url": "https://data.4tu.nl/articles/dataset/BPI_Challenge_2019/12715853/1",
     "derived_from": "p2p-process-mining",
     "derived_from_rev": "67e548c",
     "scripts": [
       "touchless.py",
-      "rework.py"
+      "rework.py",
+      "rework_touches.py"
     ],
     "note": "All values below are measured from the event log. Assumptions are kept in assumptions.yaml, never here."
   },
@@ -399,5 +400,13 @@
       "median_days": 304.68,
       "delta_days": 233.41
     }
-  ]
+  ],
+  "rework_touches": {
+    "cases": 67503,
+    "median_touches_per_case": 1.0,
+    "mean_touches_per_case": 1.483,
+    "p90_touches_per_case": 3.0,
+    "max_touches_per_case": 56,
+    "note": "Count of REWORK_ACTIVITIES events per completed, reworked case. Use the mean, not the median, to price effort \u2014 a long tail of multi-touch cases means total labour scales with the mean."
+  }
 }

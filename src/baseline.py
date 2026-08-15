@@ -66,7 +66,8 @@ def build(p2p_output: Path) -> dict:
     touchless = p2p_output / "touchless_cases.parquet"
     rework = p2p_output / "rework_cases.parquet"
     drivers = p2p_output / "rework_penalty_by_activity.parquet"
-    for path in (touchless, rework, drivers):
+    touches = p2p_output / "rework_touches.parquet"
+    for path in (touchless, rework, drivers, touches):
         if not path.exists():
             raise SystemExit(f"missing {path} — run the p2p analysis scripts first")
 
@@ -74,6 +75,7 @@ def build(p2p_output: Path) -> dict:
     con.execute(f"CREATE VIEW tc AS SELECT * FROM '{touchless}'")
     con.execute(f"CREATE VIEW rc AS SELECT * FROM '{rework}'")
     con.execute(f"CREATE VIEW rd AS SELECT * FROM '{drivers}'")
+    con.execute(f"CREATE VIEW rt AS SELECT * FROM '{touches}'")
 
     # Cases joined to their duration, excluding the 1948-2020 timestamp
     # corruption flagged during the process mining.
@@ -158,6 +160,23 @@ def build(p2p_output: Path) -> dict:
         for a, m, n, d in rows("SELECT activity, median_days, n, delta_days FROM rd ORDER BY n DESC")
     ]
 
+    touch_n, touch_median, touch_mean, touch_p90, touch_max = one("""
+        SELECT count(*), median(touch_count), avg(touch_count),
+               quantile_cont(touch_count, 0.9), max(touch_count)
+        FROM rt
+    """)
+    rework_touches = {
+        "cases": touch_n,
+        "median_touches_per_case": round(touch_median, 2),
+        "mean_touches_per_case": round(touch_mean, 3),
+        "p90_touches_per_case": round(touch_p90, 2),
+        "max_touches_per_case": touch_max,
+        "note": "Count of REWORK_ACTIVITIES events per completed, reworked "
+                "case. Use the mean, not the median, to price effort — a "
+                "long tail of multi-touch cases means total labour scales "
+                "with the mean.",
+    }
+
     return {
         "provenance": {
             "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -165,7 +184,7 @@ def build(p2p_output: Path) -> dict:
             "source_url": "https://data.4tu.nl/articles/dataset/BPI_Challenge_2019/12715853/1",
             "derived_from": "p2p-process-mining",
             "derived_from_rev": _git_rev(p2p_output.parent),
-            "scripts": ["touchless.py", "rework.py"],
+            "scripts": ["touchless.py", "rework.py", "rework_touches.py"],
             "note": "All values below are measured from the event log. "
                     "Assumptions are kept in assumptions.yaml, never here.",
         },
@@ -199,6 +218,7 @@ def build(p2p_output: Path) -> dict:
         "segments": segments,
         "match_types": match_types,
         "rework_drivers": rework_drivers,
+        "rework_touches": rework_touches,
     }
 
 
@@ -217,6 +237,9 @@ def main() -> None:
     print(f"  {o['cases']:,} cases · {o['complete_cases']:,} complete · STP {o['stp_rate']:.1%}")
     print(f"  rework penalty: {o['rework_penalty_days']} days "
           f"({o['median_days_rework']} vs {o['median_days_touchless']})")
+    rt = baseline["rework_touches"]
+    print(f"  touches per reworked case: mean {rt['mean_touches_per_case']} "
+          f"(median {rt['median_touches_per_case']}, p90 {rt['p90_touches_per_case']})")
     print(f"  target (weighted top quartile): {b['top_quartile_stp_rate']:.1%}")
     if b["exemplar_segment"]:
         print(f"  exemplar: {b['exemplar_segment']} at {b['exemplar_stp_rate']:.1%} "

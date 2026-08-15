@@ -15,20 +15,18 @@ effort:
     low: 6
     high: 25
     source: assumed
+    diligence_bucket: measurable
     note: >
       Handling time for one exception touch (investigate, correct, re-submit).
       Not derivable from the log — timestamps show elapsed time, not work time.
       Should be replaced with a time study or a sample of desk observations
       before this case is presented to a decision maker.
 
-  touches_per_rework_case:
-    value: null
-    source: measurable
-    note: >
-      Count of rework activities per affected case. This IS derivable from the
-      event log and should be measured rather than assumed — see the rework
-      analysis in p2p-process-mining. Left null deliberately so the model fails
-      loudly instead of quietly using a guess.
+  # touches_per_rework_case used to live here as an explicit `null` so the
+  # model would fail loudly rather than guess. It is now measured — see
+  # baseline.json's `rework_touches` block, sourced from
+  # p2p-process-mining/src/rework_touches.py. Kept out of this file per the
+  # rule that nothing measured belongs in assumptions.yaml.
 
 cost:
   fully_loaded_hourly_rate_eur:
@@ -36,6 +34,7 @@ cost:
     low: 32
     high: 58
     source: assumed
+    diligence_bucket: measurable
     note: >
       Fully loaded cost of a shared-services P2P processor in a European
       delivery centre, including employer contributions and overhead.
@@ -46,7 +45,11 @@ cost:
     low: 11
     high: 24
     source: assumed
-    note: Used only if the case models a location move rather than automation.
+    diligence_bucket: measurable
+    note: >
+      Used only if the case models a location move rather than automation.
+      Not consumed by the current model (automation-only scope) — carried
+      here for a future location-move variant, not fed into sensitivity.py.
 
 implementation:
   one_off_cost_eur:
@@ -54,6 +57,7 @@ implementation:
     low: 250000
     high: 900000
     source: assumed
+    diligence_bucket: unknowable
     note: >
       Build and deploy: workflow automation, master data remediation, vendor
       onboarding rules, testing, change management. The single least defensible
@@ -64,6 +68,7 @@ implementation:
     low: 35000
     high: 120000
     source: assumed
+    diligence_bucket: unknowable
     note: Licence, support and continuous-improvement capacity after go-live.
 
   ramp_months:
@@ -71,6 +76,7 @@ implementation:
     low: 12
     high: 30
     source: assumed
+    diligence_bucket: unknowable
     note: >
       Months from start until the target STP rate is reached, improving
       linearly. Nothing in the log speaks to delivery pace.
@@ -81,12 +87,25 @@ finance:
     low: 0.06
     high: 0.13
     source: assumed
+    diligence_bucket: measurable
     note: WACC. Replace with the client's own hurdle rate.
 
   horizon_years:
     value: 5
     source: convention
     note: Standard appraisal window for a transformation case.
+
+  volume_growth_pct:
+    value: 0.0
+    low: -0.05
+    high: 0.05
+    source: assumed
+    diligence_bucket: unknowable
+    note: >
+      Annual case-volume growth or decline. The log gives one historical
+      cohort (251,734 PO items created in 2018) and no second year to trend
+      against, so flat volume is the base case; ±5%/yr brackets it as a
+      genuine modelling judgement, not something the log could ever answer.
 
   working_capital:
     days_payable_value_eur_per_day:

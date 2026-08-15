@@ -76,47 +76,72 @@ penalty, not penalty alone, is what a business case should chase.
     python3 -m venv .venv
     .venv/bin/pip install -r requirements.txt
     .venv/bin/python src/baseline.py --p2p-output ../p2p-process-mining/output
+    .venv/bin/python src/model.py
+    .venv/bin/python src/sensitivity.py
+    .venv/bin/python src/report.py
 
 ## Status
 
 - [x] `src/baseline.py` — measured baseline with provenance
 - [x] `assumptions.yaml` — assumptions, sourced and ranged
-- [ ] `src/model.py` — opportunity sizing, cash flows, NPV and payback
-- [ ] `src/sensitivity.py` — tornado, Monte Carlo, diligence priority
-- [ ] `src/report.py` — charts and written case
+- [x] `src/model.py` — opportunity sizing, cash flows, NPV and payback
+- [x] `src/sensitivity.py` — tornado, Monte Carlo, diligence priority
+- [x] `src/report.py` — charts and written case
 
-## What's next, and the standard it has to meet
+## The standard it had to meet
 
-The target is a case that survives a partner review. That is not more numbers;
-it is honest treatment of uncertainty. Three things follow from it.
+The target was a case that survives a partner review. That is not more
+numbers; it is honest treatment of uncertainty. Three things followed from it.
 
 **1. Measure `touches_per_rework_case` before modelling anything.**
-It currently sits in `assumptions.yaml` as an explicit `null` so the model
-fails loudly rather than quietly guessing. It is derivable: count events per
-case whose activity is in `REWORK_ACTIVITIES` — the list lives in
+It sat in `assumptions.yaml` as an explicit `null` so the model would fail
+loudly rather than quietly guess. It was derivable: count events per case
+whose activity is in `REWORK_ACTIVITIES` — the list lives in
 `p2p-process-mining/src/touchless.py` and is the same definition the 63.2% STP
-rate rests on, so reusing it keeps the two consistent. Once measured it moves
-into `baseline.json` and out of the assumptions file. Effort per touch stays an
-assumption; the *number* of touches must not.
+rate rests on, so reusing it kept the two consistent.
+`p2p-process-mining/src/rework_touches.py`
+now measures it — mean **1.48** touches per reworked case, median 1 — and it
+lives in `baseline.json`'s `rework_touches` block, not in the assumptions
+file. Effort per touch stayed an assumption; the *number* of touches did not.
 
 **2. Report a distribution, not a point.**
-"NPV is €4.2M" is not a finding, it is a guess with decimals. The output should
-be a Monte Carlo over the assumption ranges already declared in
-`assumptions.yaml`, reported as the probability of clearing the hurdle rate
-plus an explicit downside case. A tornado chart shows which single assumption
-moves the answer most.
+`src/sensitivity.py` runs a 10,000-draw Monte Carlo over the assumption
+ranges in `assumptions.yaml`, reporting the probability of clearing the
+hurdle rate plus an explicit downside (P10) case, and a tornado chart showing
+which single assumption moves the answer most.
 
 **3. The distinguishing output: diligence priority.**
-Decompose the variance in NPV by source, and separate it into two buckets —
-uncertainty from things that *could* be measured but were not (handling times,
+The variance in NPV is decomposed by source and split into two buckets, each
+assumption in `assumptions.yaml` tagged `diligence_bucket: measurable` or
+`unknowable` — things that *could* be measured but were not (handling times,
 touch counts by segment) versus things that genuinely cannot be known yet
 (implementation cost, ramp). The first bucket is a work plan: it says which
-week of diligence buys the most confidence. Most business cases never ask this
-question, and it is the one an engagement manager actually needs answered.
+week of diligence buys the most confidence.
 
-Expect the tornado to be dominated by `implementation.one_off_cost_eur` rather
-than by anything measured. If so, say it plainly in the written case: the
-measured baseline removed uncertainty from the benefit side, and what remains
-sits almost entirely on the cost side. That is a more useful conclusion than a
-confident single number, and it is the sort of thing that reads as judgement
-rather than arithmetic.
+## Result
+
+The expectation going in was that the tornado would be dominated by
+`implementation.one_off_cost_eur` rather than by anything measured. It is
+not. **62% of NPV variance sits in the measurable bucket** —
+`effort.minutes_per_rework_touch` alone accounts for half of it — because the
+benefit stream is a 5-year discounted annuity: a proportional swing in
+effort-per-touch compounds across every year of benefit, while the
+implementation cost is a single year-zero number. A wide low/high band does
+not automatically make a number the biggest driver of NPV variance once
+discounting is applied, and the model said so instead of confirming the
+prior.
+
+The headline itself is not the one a workshop estimate would have produced:
+at central assumptions the case does **not** clear the 9% hurdle rate
+(NPV **–€142,931**), and Monte Carlo puts the odds of a positive NPV at
+**26%**. That is a direct consequence of the measured touches-per-case figure
+— reworked cases average 1.48 touches, not the multi-touch slog usually
+assumed, so eliminating rework saves less labour than intuition suggests. The
+useful output is not that number alone but where it points: diligence should
+spend its first week on a rework-handling time study and the client's actual
+rate card, not on chasing an implementation cost quote.
+
+Full write-up, cash-flow table, and all three charts:
+[`output/business_case.md`](output/business_case.md) — regenerate with
+`.venv/bin/python src/report.py` after any change to `baseline.json` or
+`assumptions.yaml`.
