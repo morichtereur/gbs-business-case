@@ -1,0 +1,403 @@
+{
+  "provenance": {
+    "generated_at": "2026-08-15T15:37:04+00:00",
+    "source_dataset": "BPI Challenge 2019 \u2014 SAP purchase-to-pay event log",
+    "source_url": "https://data.4tu.nl/articles/dataset/BPI_Challenge_2019/12715853/1",
+    "derived_from": "p2p-process-mining",
+    "derived_from_rev": "67e548c",
+    "scripts": [
+      "touchless.py",
+      "rework.py"
+    ],
+    "note": "All values below are measured from the event log. Assumptions are kept in assumptions.yaml, never here."
+  },
+  "overall": {
+    "cases": 251734,
+    "complete_cases": 183677,
+    "touchless_cases": 116174,
+    "stp_rate": 0.6325,
+    "completion_rate": 0.7296,
+    "cases_with_corrupt_timestamps": 266,
+    "median_days_touchless": 71.27,
+    "median_days_rework": 90.92,
+    "rework_penalty_days": 19.65
+  },
+  "internal_benchmark": {
+    "top_quartile_stp_rate": 0.7055,
+    "method": "Case-weighted 75th percentile of STP across segments with at least 500 completed cases.",
+    "exemplar_segment": "Sales",
+    "exemplar_stp_rate": 0.7055,
+    "exemplar_complete_cases": 55621,
+    "exemplar_rule": "Best segment carrying at least 5% of completed cases.",
+    "rationale": "The target is demonstrated inside the same organisation, on the same system and process, rather than taken from an external benchmark or assumed in a workshop. Weighting by case count stops a small segment setting the target: Marketing reaches 78.2% on 0.7% of volume, which is not evidence that Packaging could."
+  },
+  "segments": [
+    {
+      "spend_area": "Packaging",
+      "cases": 109199,
+      "complete_cases": 76643,
+      "touchless_cases": 45744,
+      "stp_rate": 0.5968,
+      "median_days_touchless": 97.24,
+      "median_days_rework": 104.84,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Sales",
+      "cases": 65864,
+      "complete_cases": 55621,
+      "touchless_cases": 39238,
+      "stp_rate": 0.7055,
+      "median_days_touchless": 55.65,
+      "median_days_rework": 58.68,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Trading & End Products",
+      "cases": 22292,
+      "complete_cases": 17026,
+      "touchless_cases": 10212,
+      "stp_rate": 0.5998,
+      "median_days_touchless": 57.34,
+      "median_days_rework": 92.25,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Additives",
+      "cases": 18318,
+      "complete_cases": 12381,
+      "touchless_cases": 8062,
+      "stp_rate": 0.6512,
+      "median_days_touchless": 86.14,
+      "median_days_rework": 91.95,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "CAPEX & SOCS",
+      "cases": 6769,
+      "complete_cases": 5305,
+      "touchless_cases": 3297,
+      "stp_rate": 0.6215,
+      "median_days_touchless": 27.33,
+      "median_days_rework": 27.7,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Logistics",
+      "cases": 5242,
+      "complete_cases": 1735,
+      "touchless_cases": 1284,
+      "stp_rate": 0.7401,
+      "median_days_touchless": 81.66,
+      "median_days_rework": 155.67,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Latex & Monomers",
+      "cases": 5007,
+      "complete_cases": 3080,
+      "touchless_cases": 1362,
+      "stp_rate": 0.4422,
+      "median_days_touchless": 84.68,
+      "median_days_rework": 90.9,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "(unclassified)",
+      "cases": 3289,
+      "complete_cases": 1625,
+      "touchless_cases": 742,
+      "stp_rate": 0.4566,
+      "median_days_touchless": 83.63,
+      "median_days_rework": 88.52,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Others",
+      "cases": 2635,
+      "complete_cases": 1954,
+      "touchless_cases": 1414,
+      "stp_rate": 0.7236,
+      "median_days_touchless": 55.7,
+      "median_days_rework": 72.29,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Solvents",
+      "cases": 2629,
+      "complete_cases": 1796,
+      "touchless_cases": 1053,
+      "stp_rate": 0.5863,
+      "median_days_touchless": 85.23,
+      "median_days_rework": 90.96,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Pigments & Colorants",
+      "cases": 2593,
+      "complete_cases": 1918,
+      "touchless_cases": 1076,
+      "stp_rate": 0.561,
+      "median_days_touchless": 79.92,
+      "median_days_rework": 92.11,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Specialty Resins",
+      "cases": 2406,
+      "complete_cases": 1591,
+      "touchless_cases": 860,
+      "stp_rate": 0.5405,
+      "median_days_touchless": 83.25,
+      "median_days_rework": 93.15,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Titanium Dioxides",
+      "cases": 1863,
+      "complete_cases": 572,
+      "touchless_cases": 252,
+      "stp_rate": 0.4406,
+      "median_days_touchless": 136.1,
+      "median_days_rework": 141.66,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Marketing",
+      "cases": 1791,
+      "complete_cases": 1308,
+      "touchless_cases": 1023,
+      "stp_rate": 0.7821,
+      "median_days_touchless": 73.03,
+      "median_days_rework": 119.58,
+      "usable_for_sizing": true,
+      "excluded_reason": null
+    },
+    {
+      "spend_area": "Enterprise Services",
+      "cases": 664,
+      "complete_cases": 442,
+      "touchless_cases": 316,
+      "stp_rate": 0.7149,
+      "median_days_touchless": 56.03,
+      "median_days_rework": 70.98,
+      "usable_for_sizing": false,
+      "excluded_reason": "only 442 completed cases (< 500); rate not reliable"
+    },
+    {
+      "spend_area": "Real Estate",
+      "cases": 584,
+      "complete_cases": 224,
+      "touchless_cases": 0,
+      "stp_rate": 0.0,
+      "median_days_touchless": null,
+      "median_days_rework": 84.45,
+      "usable_for_sizing": false,
+      "excluded_reason": "only 224 completed cases (< 500); rate not reliable"
+    },
+    {
+      "spend_area": "Commodity Resins",
+      "cases": 409,
+      "complete_cases": 330,
+      "touchless_cases": 195,
+      "stp_rate": 0.5909,
+      "median_days_touchless": 79.73,
+      "median_days_rework": 87.67,
+      "usable_for_sizing": false,
+      "excluded_reason": "only 330 completed cases (< 500); rate not reliable"
+    },
+    {
+      "spend_area": "Workforce Services",
+      "cases": 128,
+      "complete_cases": 98,
+      "touchless_cases": 38,
+      "stp_rate": 0.3878,
+      "median_days_touchless": 66.21,
+      "median_days_rework": 200.79,
+      "usable_for_sizing": false,
+      "excluded_reason": "only 98 completed cases (< 500); rate not reliable"
+    },
+    {
+      "spend_area": "Spend Area Unidentified",
+      "cases": 36,
+      "complete_cases": 21,
+      "touchless_cases": 5,
+      "stp_rate": 0.2381,
+      "median_days_touchless": 99.02,
+      "median_days_rework": 107.71,
+      "usable_for_sizing": false,
+      "excluded_reason": "only 21 completed cases (< 500); rate not reliable"
+    },
+    {
+      "spend_area": "Energy",
+      "cases": 15,
+      "complete_cases": 6,
+      "touchless_cases": 0,
+      "stp_rate": 0.0,
+      "median_days_touchless": null,
+      "median_days_rework": 54.85,
+      "usable_for_sizing": false,
+      "excluded_reason": "only 6 completed cases (< 500); rate not reliable"
+    },
+    {
+      "spend_area": "Chemicals & Intermediates",
+      "cases": 1,
+      "complete_cases": 1,
+      "touchless_cases": 1,
+      "stp_rate": 1.0,
+      "median_days_touchless": 71.1,
+      "median_days_rework": null,
+      "usable_for_sizing": false,
+      "excluded_reason": "only 1 completed cases (< 500); rate not reliable"
+    }
+  ],
+  "match_types": [
+    {
+      "item_category": "3-way match, invoice before GR",
+      "cases": 221010,
+      "complete_cases": 173698,
+      "stp_rate": 0.6335
+    },
+    {
+      "item_category": "3-way match, invoice after GR",
+      "cases": 15182,
+      "complete_cases": 9676,
+      "stp_rate": 0.6339
+    },
+    {
+      "item_category": "Consignment",
+      "cases": 14498,
+      "complete_cases": 0,
+      "stp_rate": null
+    },
+    {
+      "item_category": "2-way match",
+      "cases": 1044,
+      "complete_cases": 303,
+      "stp_rate": 0.0
+    }
+  ],
+  "rework_drivers": [
+    {
+      "activity": "Remove Payment Block",
+      "cases": 50522,
+      "median_days": 90.08,
+      "delta_days": 18.81
+    },
+    {
+      "activity": "Change Quantity",
+      "cases": 12742,
+      "median_days": 101.05,
+      "delta_days": 29.77
+    },
+    {
+      "activity": "Change Price",
+      "cases": 9036,
+      "median_days": 93.19,
+      "delta_days": 21.91
+    },
+    {
+      "activity": "Cancel Invoice Receipt",
+      "cases": 5909,
+      "median_days": 128.33,
+      "delta_days": 57.06
+    },
+    {
+      "activity": "Vendor creates debit memo",
+      "cases": 5629,
+      "median_days": 108.36,
+      "delta_days": 37.08
+    },
+    {
+      "activity": "Change Approval for Purchase Order",
+      "cases": 1933,
+      "median_days": 120.0,
+      "delta_days": 48.73
+    },
+    {
+      "activity": "Change Delivery Indicator",
+      "cases": 1893,
+      "median_days": 99.03,
+      "delta_days": 27.75
+    },
+    {
+      "activity": "Cancel Goods Receipt",
+      "cases": 1205,
+      "median_days": 85.28,
+      "delta_days": 14.01
+    },
+    {
+      "activity": "Cancel Subsequent Invoice",
+      "cases": 467,
+      "median_days": 102.24,
+      "delta_days": 30.96
+    },
+    {
+      "activity": "Reactivate Purchase Order Item",
+      "cases": 389,
+      "median_days": 107.9,
+      "delta_days": 36.63
+    },
+    {
+      "activity": "Delete Purchase Order Item",
+      "cases": 277,
+      "median_days": 84.67,
+      "delta_days": 13.4
+    },
+    {
+      "activity": "Change Storage Location",
+      "cases": 247,
+      "median_days": 78.11,
+      "delta_days": 6.83
+    },
+    {
+      "activity": "Update Order Confirmation",
+      "cases": 187,
+      "median_days": 94.15,
+      "delta_days": 22.87
+    },
+    {
+      "activity": "Block Purchase Order Item",
+      "cases": 163,
+      "median_days": 149.94,
+      "delta_days": 78.67
+    },
+    {
+      "activity": "Record Subsequent Invoice",
+      "cases": 151,
+      "median_days": 119.25,
+      "delta_days": 47.97
+    },
+    {
+      "activity": "SRM: Deleted",
+      "cases": 103,
+      "median_days": 170.09,
+      "delta_days": 98.82
+    },
+    {
+      "activity": "Set Payment Block",
+      "cases": 52,
+      "median_days": 112.3,
+      "delta_days": 41.03
+    },
+    {
+      "activity": "SRM: Transfer Failed (E.Sys.)",
+      "cases": 42,
+      "median_days": 304.68,
+      "delta_days": 233.41
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+# Assumptions — everything the event log cannot tell us.
+#
+# Nothing measured belongs in this file, and nothing assumed belongs in
+# baseline.json. That separation is the point of the model: the reader can
+# always see which half of a result rests on evidence and which on judgement.
+#
+# Every entry carries a source and a range. The range is not decoration —
+# sensitivity.py runs the model across it, and any assumption whose range
+# swings the NPV materially is one the business case has to defend rather
+# than bury.
+
+effort:
+  minutes_per_rework_touch:
+    value: 12
+    low: 6
+    high: 25
+    source: assumed
+    note: >
+      Handling time for one exception touch (investigate, correct, re-submit).
+      Not derivable from the log — timestamps show elapsed time, not work time.
+      Should be replaced with a time study or a sample of desk observations
+      before this case is presented to a decision maker.
+
+  touches_per_rework_case:
+    value: null
+    source: measurable
+    note: >
+      Count of rework activities per affected case. This IS derivable from the
+      event log and should be measured rather than assumed — see the rework
+      analysis in p2p-process-mining. Left null deliberately so the model fails
+      loudly instead of quietly using a guess.
+
+cost:
+  fully_loaded_hourly_rate_eur:
+    value: 42
+    low: 32
+    high: 58
+    source: assumed
+    note: >
+      Fully loaded cost of a shared-services P2P processor in a European
+      delivery centre, including employer contributions and overhead.
+      Replace with the client's actual rate card.
+
+  offshore_hourly_rate_eur:
+    value: 16
+    low: 11
+    high: 24
+    source: assumed
+    note: Used only if the case models a location move rather than automation.
+
+implementation:
+  one_off_cost_eur:
+    value: 450000
+    low: 250000
+    high: 900000
+    source: assumed
+    note: >
+      Build and deploy: workflow automation, master data remediation, vendor
+      onboarding rules, testing, change management. The single least defensible
+      number in the model and usually the one the NPV is most sensitive to.
+
+  annual_run_cost_eur:
+    value: 60000
+    low: 35000
+    high: 120000
+    source: assumed
+    note: Licence, support and continuous-improvement capacity after go-live.
+
+  ramp_months:
+    value: 18
+    low: 12
+    high: 30
+    source: assumed
+    note: >
+      Months from start until the target STP rate is reached, improving
+      linearly. Nothing in the log speaks to delivery pace.
+
+finance:
+  discount_rate:
+    value: 0.09
+    low: 0.06
+    high: 0.13
+    source: assumed
+    note: WACC. Replace with the client's own hurdle rate.
+
+  horizon_years:
+    value: 5
+    source: convention
+    note: Standard appraisal window for a transformation case.
+
+  working_capital:
+    days_payable_value_eur_per_day:
+      value: null
+      source: unavailable
+      note: >
+        Reducing cycle time changes payment timing, but the log carries only
+        a cumulative net worth per event, not invoice values in a form that
+        supports a working-capital calculation. Left out of the case rather
+        than estimated — an unquantified benefit named honestly is worth more
+        than a quantified one that cannot be defended.
+
+scope:
+  exclude_segments:
+    - reason: no completed cases in the log; STP not computable
+      match: Consignment
+    - reason: fewer than 500 completed cases; rate not reliable
+      match: __below_min_complete__
+  note: >
+    Savings are claimed only on segments where the baseline is measurable.
+    Consignment alone is 14,498 cases (5.8%) with zero completions — sizeable,
+    and precisely why it must be excluded rather than assumed to behave like
+    the rest.
