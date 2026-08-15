@@ -82,5 +82,41 @@ penalty, not penalty alone, is what a business case should chase.
 - [x] `src/baseline.py` — measured baseline with provenance
 - [x] `assumptions.yaml` — assumptions, sourced and ranged
 - [ ] `src/model.py` — opportunity sizing, cash flows, NPV and payback
-- [ ] `src/sensitivity.py` — tornado and Monte Carlo across assumption ranges
+- [ ] `src/sensitivity.py` — tornado, Monte Carlo, diligence priority
 - [ ] `src/report.py` — charts and written case
+
+## What's next, and the standard it has to meet
+
+The target is a case that survives a partner review. That is not more numbers;
+it is honest treatment of uncertainty. Three things follow from it.
+
+**1. Measure `touches_per_rework_case` before modelling anything.**
+It currently sits in `assumptions.yaml` as an explicit `null` so the model
+fails loudly rather than quietly guessing. It is derivable: count events per
+case whose activity is in `REWORK_ACTIVITIES` — the list lives in
+`p2p-process-mining/src/touchless.py` and is the same definition the 63.2% STP
+rate rests on, so reusing it keeps the two consistent. Once measured it moves
+into `baseline.json` and out of the assumptions file. Effort per touch stays an
+assumption; the *number* of touches must not.
+
+**2. Report a distribution, not a point.**
+"NPV is €4.2M" is not a finding, it is a guess with decimals. The output should
+be a Monte Carlo over the assumption ranges already declared in
+`assumptions.yaml`, reported as the probability of clearing the hurdle rate
+plus an explicit downside case. A tornado chart shows which single assumption
+moves the answer most.
+
+**3. The distinguishing output: diligence priority.**
+Decompose the variance in NPV by source, and separate it into two buckets —
+uncertainty from things that *could* be measured but were not (handling times,
+touch counts by segment) versus things that genuinely cannot be known yet
+(implementation cost, ramp). The first bucket is a work plan: it says which
+week of diligence buys the most confidence. Most business cases never ask this
+question, and it is the one an engagement manager actually needs answered.
+
+Expect the tornado to be dominated by `implementation.one_off_cost_eur` rather
+than by anything measured. If so, say it plainly in the written case: the
+measured baseline removed uncertainty from the benefit side, and what remains
+sits almost entirely on the cost side. That is a more useful conclusion than a
+confident single number, and it is the sort of thing that reads as judgement
+rather than arithmetic.
